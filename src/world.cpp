@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-void World::loadFromCSV(){
+void World::loadFromCSV(std::string fileName){
 
 
-    std::ifstream       file("../maps/simpleRace.csv");
+    std::ifstream       file(fileName);
     CSVRow              row;
 
     while(file >> row)

@@ -7,7 +7,7 @@ public:
 	std::vector<double> roadIC, posE, posN, roadPsi, curvature, s;
 	bool isOpen;
 
-	void loadFromCSV();
+	void loadFromCSV(std::string fileName);
 	void loadFromMAT();
 	void genFromEN();
 	void genFromSK();
