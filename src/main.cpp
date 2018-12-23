@@ -3,9 +3,12 @@
 #include "world.h"
 #include "speed_profiles.h"
 #include <string>
+#include "matplotlibcpp.h"
 
 int main()
 {
+
+	namespace plt = matplotlibcpp;
 
 	Vehicle_T vehicle;
 	World world;
@@ -17,9 +20,12 @@ int main()
 	double friction = 0.90;
 	double vMax = 99.0;
 
-	//BasicProfile speedProfile(vehicle, world, friction, vMax);
+	BasicProfile speedProfile(vehicle, world, friction, vMax);
 
-	std::cout << world.s[100] << std::endl;
+	plt::plot(world.s, world.curvature);
+	plt::show();
+
+	//std::cout << speedProfile << std::endl;
 
 	return 0;
 }
