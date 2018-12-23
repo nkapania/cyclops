@@ -9,16 +9,18 @@ void World::loadFromCSV(){
     std::ifstream       file("../maps/simpleRace.csv");
     CSVRow              row;
 
-    std::vector<std::string> s;
-
     while(file >> row)
     {
-    	   this->s.push_back(row[0]);
-    	   this->curvature.push_back(row[1]);
-           this->posE.push_back(row[2]);
-           this->posN.push_back(row[3]);
-           this->roadPsi.push_back(row[4]);
+    	   this->s.push_back(stod(row[0], NULL));
+    	   this->curvature.push_back(stod(row[1], NULL));
+         this->posE.push_back(stod(row[2], NULL));
+         this->posN.push_back(stod(row[3], NULL));
+         this->roadPsi.push_back(stod(row[4], NULL));
     }
+
+    //convert to doubles
+
+    this->isOpen = false; //hardcoded for now
 
 
 }

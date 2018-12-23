@@ -4,7 +4,7 @@
 
 class World{
 public:
-	std::vector<std::string> roadIC, posE, posN, roadPsi, curvature, s;
+	std::vector<double> roadIC, posE, posN, roadPsi, curvature, s;
 	bool isOpen;
 
 	void loadFromCSV();
