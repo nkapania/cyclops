@@ -4,6 +4,7 @@
 #include "speed_profiles.h"
 #include <string>
 #include "matplotlibcpp.h"
+#include "controllers.h"
 
 int main()
 {
@@ -21,14 +22,9 @@ int main()
 	double vMax = 99.0;
 
 	BasicProfile speedProfile(vehicle, world, friction, vMax);
+	LanekeepingController controller(world, vehicle); // speedProfile);
 
-	plt::plot(speedProfile.s, speedProfile.Ux);
-	plt::show();
-
-	plt::plot(speedProfile.s, speedProfile.Ax);
-	plt::show();
-
-	//std::cout << speedProfile << std::endl;
+	std::cout << "done" << std::endl;
 
 	return 0;
 }

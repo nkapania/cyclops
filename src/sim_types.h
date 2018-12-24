@@ -25,4 +25,31 @@ struct Vehicle_T{
 	double brakeFactor; 
 };
 
+struct LocalState_T{
+	double Ux;
+	double Uy;
+	double r; 
+	double s; 
+	double e; 
+	double dPsi;
+};
+
+struct AuxVars_T{
+	double K;
+	double UxDes;
+	double AxDes;
+	double alphaFdes;
+	double alphaRdes;
+	double deltaFFW;
+	double deltaFB;
+	double betaFFW;
+	};
+
+struct ControlInput{
+	double delta;
+	double Fx; 
+};
+
+
+
 void loadVehicleShelley(Vehicle_T& vehicle);
