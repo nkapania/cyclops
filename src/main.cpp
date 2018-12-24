@@ -22,7 +22,10 @@ int main()
 
 	BasicProfile speedProfile(vehicle, world, friction, vMax);
 
-	plt::plot(world.s, world.curvature);
+	plt::plot(speedProfile.s, speedProfile.Ux);
+	plt::show();
+
+	plt::plot(speedProfile.s, speedProfile.Ax);
 	plt::show();
 
 	//std::cout << speedProfile << std::endl;
