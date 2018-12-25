@@ -1,9 +1,14 @@
 #include <cmath>
 #include <vector>
+#include "utils.h"
 
-template <typename T> int sgn(T val) {
+
+//To do. Put this in utils. 
+template <typename T> int sgn(T val) 
+{
     return (T(0) < val) - (val < T(0));
 }
+
 
 std::vector<double> fiala(double C,double muP,double muS,std::vector<double> alpha, double Fz){
 	double alphaSlide = std::abs( atan( 3 * muP * Fz / C));

@@ -5,21 +5,7 @@
 #include "tiremodels.h"
 #include "matplotlibcpp.h"
 #include <iostream>
-
-
-//Note - this is a poor man's linspace function, not 
-// robustly tested - C++ does not appear to have a 
-// standard version of this. Do not use outside of this file. 
-std::vector<double> linspace(double a, double b, int n) {
-    std::vector<double> array;
-    double step = (b-a) / (n-1);
-
-    while(a <= b) {
-        array.push_back(a);
-        a += step;           // could recode to better handle rounding errors
-    }
-    return array;
-}
+#include "utils.h"
 
 //Constructor::
 
@@ -46,16 +32,72 @@ LanekeepingController::LanekeepingController(World& world, Vehicle_T& vehicle, B
     this-> FyFtable = fiala(vehicle.Cf, vehicle.muF, vehicle.muF, alphaFtable, vehicle.FzF);
     this-> FyRtable = fiala(vehicle.Cr, vehicle.muR, vehicle.muR, alphaRtable, vehicle.FzR);
 
-    namespace plt = matplotlibcpp;
-    plt::plot(alphaFtable, FyFtable);
-    plt::plot(alphaRtable, FyRtable);
+}
 
-    plt::show();
 
+double LanekeepingController::getDeltaFB(LocalState_T& localState,const double betaFFW){
+	double kLK = this->kLK;
+	double xLA = this->xLA;
+	double e = localState.e;
+	double deltaPsi = localState.dPsi;
+
+	double deltaFB = -kLK * (e + xLA * sin(deltaPsi + betaFFW));
+	return deltaFB;
+}
+
+double LanekeepingController::speedTracking(LocalState_T& localState){
+	//Unpack vectors for readability
+
+	std::vector<double> AxTable = this-> profile.Ax;
+	std::vector<double> UxTable = this-> profile.Ux;
+	std::vector<double> sTable  = this-> profile.s;
+
+	double m = this->vehicle.m;
+	double fdrag = this->vehicle.dragCoeff;
+	double frr = this->vehicle.rollResistance;
+
+	double s = localState.s;
+	double Ux = localState.Ux;
+
+	//TODO: Get help for why we can't find interpolate1D function
+	double AxDes = 0;
+	double UxDes = 0;
+
+	//interpolate1D(sTable, AxTable, sTable.size(), s, AxDes);
+	//InterpData_T out2;// = interpolate1D(sTable, UxTable, sTable.size(), s, UxDes);
+
+
+	double FxFFW = m*AxDes + sgn(Ux)*fdrag*pow(Ux, 2) + frr*sgn(Ux);
+	double FxFB  = -this->kSpeed * (Ux - UxDes); //feedback
+	double FxCommand = FxFFW + FxFB;
+
+	return FxCommand;
 
 }
 
+double LanekeepingController::getDeltaFFW(LocalState_T& localState,double& betaFFW, double K){
+	double a = this->vehicle.a;
+	double b = this->vehicle.b;
+	double L = this->vehicle.L;
+	double m = this->vehicle.m;
+
+	double Ux = localState.Ux;
+
+	double FyFdes = b / L * m * pow(Ux, 2) * K ;
+	double FyRdes = a / b * FyFdes;
+
+	double alphaFdes = force2alpha(this->FyFtable, this->alphaFtable, FyFdes);
+	double alphaRdes = force2alpha(this->FyRtable, this->alphaRtable, FyRdes);
+
+	betaFFW = alphaRdes + b*K;
+	double deltaFFW = K * L + alphaRdes - alphaFdes;
+
+	return deltaFFW;
+
+}
 
 //Destructor
 LanekeepingController::~LanekeepingController(){
 };
+
+

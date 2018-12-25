@@ -11,11 +11,11 @@ void World::loadFromCSV(std::string fileName){
 
     while(file >> row)
     {
-    	   this->s.push_back(stod(row[0], NULL));
-    	   this->curvature.push_back(stod(row[1], NULL));
-         this->posE.push_back(stod(row[2], NULL));
-         this->posN.push_back(stod(row[3], NULL));
-         this->roadPsi.push_back(stod(row[4], NULL));
+    	this->s.push_back(stod(row[0], NULL));
+    	this->curvature.push_back(stod(row[1], NULL));
+        this->posE.push_back(stod(row[2], NULL));
+        this->posN.push_back(stod(row[3], NULL));
+        this->roadPsi.push_back(stod(row[4], NULL));
     }
 
     //convert to doubles
