@@ -28,6 +28,7 @@ public:
 
     // Constructor
     BasicProfile(Vehicle_T& vehicle, World& world, double friction = 0.3, double vMax = 10.0, double AxMax = 9.81);
+    BasicProfile();
 
     // Destructor
     ~BasicProfile();

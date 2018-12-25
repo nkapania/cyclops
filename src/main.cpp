@@ -22,8 +22,8 @@ int main()
 	double vMax = 99.0;
 
 	BasicProfile speedProfile(vehicle, world, friction, vMax);
-	LanekeepingController controller(world, vehicle); // speedProfile);
-
+	std::cout << "done" << std::endl;
+	LanekeepingController controller(world, vehicle, speedProfile);
 	std::cout << "done" << std::endl;
 
 	return 0;

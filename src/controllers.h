@@ -1,7 +1,8 @@
 #pragma once
 #include "world.h"
-//#include "speed_profiles.h"
+#include "speed_profiles.h"
 #include "sim_types.h"
+
 
 // Defines a class that implements the lanekeeping controller from
 // Nitin Kapania's thesis
@@ -11,7 +12,7 @@ private:
     
     World world;
     Vehicle_T vehicle;
-    //BasicProfile profile;
+    BasicProfile profile;
     double xLA; //lookahead distance, meters
     double kLK; //proportional gain, rad / meter
     double kSpeed; //speed proportional gaiin - N / (m/s)
@@ -35,7 +36,7 @@ private:
 public:
 
     //Constructor
-    LanekeepingController(World& world, Vehicle_T& vehicle); // BasicProfile& profile); 
+    LanekeepingController(World& world, Vehicle_T& vehicle, BasicProfile& profile); 
     AuxVars_T updateInput(LocalState_T& localState, ControlInput& controlInput);
 
     //Destructor

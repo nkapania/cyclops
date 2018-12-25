@@ -6,7 +6,7 @@
 #include <iostream>
 #include "matplotlibcpp.h"
 
-//Constructor
+//Constructors
 BasicProfile::BasicProfile(Vehicle_T& vehicleIn, World& worldIn, double frictionIn, double vMaxIn, double AxMaxIn){
 	this->vehicle = vehicleIn;
 	this->world = worldIn;
@@ -25,6 +25,10 @@ BasicProfile::BasicProfile(Vehicle_T& vehicleIn, World& worldIn, double friction
 	}
 
 }
+
+BasicProfile::BasicProfile(){
+}
+
 
 BasicProfile::~BasicProfile(){
 }
