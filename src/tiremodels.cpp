@@ -72,4 +72,3 @@ void coupledTireForces(double& FyF,double& FyR,double& zetaF,double& zetaR,
   	coupledTire(FyF, zetaF, alphaF, FxF, FzF, muF, muF, Cf); 
   	coupledTire(FyR, zetaR, alphaR, FxR, FzR, muR, muR, Cr); 
 }
-

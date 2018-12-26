@@ -3,7 +3,6 @@
 #include <cmath>
 #include "tiremodels.h"
 
-//functions not included as part of simulation class
 //Constructor::
 Simulation::Simulation(World& world, Vehicle_T& vehicle,
  LanekeepingController& controller, BasicProfile& profile){
@@ -126,6 +125,35 @@ void Simulation::incrementLapNumber(const double s){
 
 }
 
+void Simulation::updateState(const ControlInput& controlInput, LocalState_T& localState, GlobalState_T& globalState, AuxVars_T& auxVars){
+	double K = auxVars.K;
+	double UxDes = auxVars.UxDes;
+
+	if (this->physics == BICYCLE){
+		bicycleModel(controlInput, localState, globalState, K);
+	}
+
+	// to do implement other types of physics (e..g 4 wheeled)
+
+}
+
+void Simulation::printStatus(const LocalState_T& localState, const int counter){
+	double sEnd = *this->world.s.end();
+	double pctComplete = ceil( 100 * (localState.s + sEnd * this->lapNumber) / (sEnd * this->desiredLaps));
+
+	if (counter % 100 == 0){
+		std::cout << "Simulation is " << pctComplete << "percent done " << std::endl;
+	}
+
+}
+
+void Simulation::incrementLapNumber(const double s){
+	//method to check if we have elapsed a lap
+
+	if (this->last_s > s) this->lapNumber ++;
+	this->last_s = s;
+
+}
 
 void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& localState, GlobalState_T& globalState, const double K){
 	
@@ -152,12 +180,12 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 	//calculate forces and tire slips
 	double FxF, FxR, FzF, FzR;
 
-	getFx(FxF, FxR, FxDes, Ux, this->vehicle); 
-	getNormalForces(FzF, FzR, this->wtType, FxF+FxR, vehicle);
+	getFx(FxF, FxR, FxDes, Ux); 
+	getNormalForces(FzF, FzR, FxF+FxR);
 
 	double alphaF, alphaR;
 
-	getSlips(alphaF, alphaR, localState, vehicle, controlInput);
+	getSlips(alphaF, alphaR, localState, controlInput);
 
 	double FyF, FyR, zetaF, zetaR; 
 
@@ -166,7 +194,7 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 	}
 	else if (this->tires == FIALA){
 		//just set FxF and FxR to 0
-		coupledTireForces(FyF, FyR, zetaF, zetaR, alphaF, alphaR, 0, 0, FzF, FzR, vehicle)
+		coupledTireForces(FyF, FyR, zetaF, zetaR, alphaF, alphaR, 0, 0, FzF, FzR, vehicle);
 	}
 
 	else if (this->tires == LINEAR){
@@ -220,59 +248,41 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 
 }
 
-
-
-
-void getFx(double& FxF,double& FxR,const double FxDes,const double Ux,const Vehicle_T& vehicle){
+void Simulation::getFx(double& FxF,double& FxR,const double FxDes,const double Ux){
 	//implement engine and brake limits
 	double Fx; 
-	if (FxDes > 0): 
-		if Ux == 0{
+	if (FxDes > 0){ 
+		if (Ux == 0){
 			Fx = FxDes;
 		}
 		else{
-			Fx = std::min(vehicle.powerLimit / Ux - 0.7 * pow(Ux, 2) - 300, FxDes);
+			Fx = std::min(this->vehicle.powerLimit / Ux - 0.7 * pow(Ux, 2) - 300, FxDes);
 		}
+	}
 
 	else{
 		Fx = FxDes;
 	}
 
 	//Distribute according to weight
-	FxF = Fx * vehicle.b / vehicle.L; 
-	FxR = Fx * vehicle.a / vehicle.L; 
+	FxF = Fx * this->vehicle.b / this->vehicle.L; 
+	FxR = Fx * this->vehicle.a / this->vehicle.L; 
 }
 
-void getSlips(double& alphaF,double& alphaR,const LocalState_T localState,const Vehicle_T& vehicle,const ControlInput controlInput){
-	double Ux = localState.Ux;
-	double Uy = localState.Uy; 
-	double r = localState.r;
-	delta = controlInput.delta;
-
-	if (Ux < 2.0){
-		alphaF = 0 //speed too low to get slip estimate
-		alphaR = 0
-	}
-	else{
-		alphaF = atan( (Uy + vehicle.a * r) / Ux ) - delta;
-		alphaR = atan( (Uy - vehicle.b * r) / Ux ); 
-	}
-}
-
-void getNormalForces(double& FzF,double& FzR, WeightTransferType wtType, const double Fx, const Vehicle_T& vehicle){
-	if (wt == NONE){
+void Simulation::getNormalForces(double& FzF,double& FzR, const double Fx){
+	if (this->wtType == NONE){
 		//return the static normal forces
-		FzF = vehicle.FzF;
-		FzR = vehicle.FzR; 
+		FzF = this->vehicle.FzF;
+		FzR = this->vehicle.FzR; 
 
 	}
-	else if (wt == STEADYSTATE){
+	else if (wtType == STEADYSTATE){
 		double L = vehicle.a + vehicle.b; 
-		m = vehicle.m; 
-		a = vehicle.a;
-		b = vehicle.b; 
-		g = vehicle.g; 
-		h = vehicle.h; 
+		double m = this->vehicle.m; 
+		double a = this->vehicle.a;
+		double b = this->vehicle.b; 
+		double g = this->vehicle.g; 
+		double h = this->vehicle.h; 
 
 		FzF = 1 / L * (m*b*g - h * Fx); 
 		FzR = 1 / L * (m*a*g + h * Fx);
@@ -283,14 +293,18 @@ void getNormalForces(double& FzF,double& FzR, WeightTransferType wtType, const d
 	}
 }
 
+void Simulation::getSlips(double& alphaF,double& alphaR,const LocalState_T localState,const ControlInput controlInput){
+	double Ux = localState.Ux;
+	double Uy = localState.Uy; 
+	double r = localState.r;
+	double delta = controlInput.delta;
 
-
-
-
-
-
-
-
-
-
-
+	if (Ux < 2.0){
+		alphaF = 0; //speed too low to get slip estimate
+		alphaR = 0;
+	}
+	else{
+		alphaF = atan( (Uy + this->vehicle.a * r) / Ux ) - delta;
+		alphaR = atan( (Uy - this->vehicle.b * r) / Ux ); 
+	}
+}
