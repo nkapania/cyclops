@@ -6,6 +6,7 @@
 #include "matplotlibcpp.h"
 #include <iostream>
 #include "utils.h"
+#include "sim_types.h"
 
 //Constructor::
 
@@ -35,7 +36,7 @@ LanekeepingController::LanekeepingController(World& world, Vehicle_T& vehicle, B
 }
 
 
-double LanekeepingController::getDeltaFB(LocalState_T& localState,const double betaFFW){
+double LanekeepingController::getDeltaFB(const LocalState_T& localState,const double betaFFW){
 	double kLK = this->kLK;
 	double xLA = this->xLA;
 	double e = localState.e;
@@ -45,7 +46,7 @@ double LanekeepingController::getDeltaFB(LocalState_T& localState,const double b
 	return deltaFB;
 }
 
-double LanekeepingController::speedTracking(LocalState_T& localState){
+double LanekeepingController::speedTracking(const LocalState_T& localState){
 	//Unpack vectors for readability
 
 	std::vector<double> AxTable = this-> profile.Ax;
@@ -75,7 +76,7 @@ double LanekeepingController::speedTracking(LocalState_T& localState){
 
 }
 
-double LanekeepingController::getDeltaFFW(LocalState_T& localState,double& betaFFW, double K){
+double LanekeepingController::getDeltaFFW(const LocalState_T& localState,double& betaFFW,const double K){
 	double a = this->vehicle.a;
 	double b = this->vehicle.b;
 	double L = this->vehicle.L;
@@ -95,6 +96,35 @@ double LanekeepingController::getDeltaFFW(LocalState_T& localState,double& betaF
 	return deltaFFW;
 
 }
+
+double LanekeepingController::lanekeeping(const LocalState_T& localState){
+	std::vector<double> sTable = this->world.s;
+	std::vector<double> kTable = this->world.curvature;
+	double s = localState.s;
+
+
+	double K;
+	double betaFFW; 
+	interpolate1D(sTable, kTable, kTable.size(), s, K);
+	double deltaFFW = this-> getDeltaFFW(localState, betaFFW,  K);
+	double deltaFB  = this-> getDeltaFB (localState, betaFFW);
+	double delta = deltaFFW + deltaFB;
+
+	return delta; 
+	}
+
+
+AuxVars_T LanekeepingController::updateInput(const LocalState_T& localState, ControlInput& controlInput){
+	double delta = this->lanekeeping(localState);
+	double Fx = this-> speedTracking(localState);
+
+	controlInput.delta = delta;
+	controlInput.Fx = Fx;  
+
+	//to do: populate; 
+	AuxVars_T out = {};
+
+	}
 
 //Destructor
 LanekeepingController::~LanekeepingController(){

@@ -29,15 +29,16 @@ private:
     std::vector<double> FyFtable;
     std::vector<double> FyRtable; 
 
-    double getDeltaFB(LocalState_T& localState,const double betaFFW);
-    double speedTracking(LocalState_T& localState);
-    double getDeltaFFW(LocalState_T& localState,double& betaFFW, double K);
+    double getDeltaFB(const LocalState_T& localState,const double betaFFW);
+    double speedTracking(const LocalState_T& localState);
+    double getDeltaFFW(const LocalState_T& localState,double& betaFFW,const double K);
+    double lanekeeping(const LocalState_T& localState); 
 
 public:
 
     //Constructor
     LanekeepingController(World& world, Vehicle_T& vehicle, BasicProfile& profile); 
-    AuxVars_T updateInput(LocalState_T& localState, ControlInput& controlInput);
+    AuxVars_T updateInput(const LocalState_T& localState, ControlInput& controlInput);
 
     //Destructor
     ~LanekeepingController();
