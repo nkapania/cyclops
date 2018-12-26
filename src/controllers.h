@@ -36,8 +36,10 @@ private:
 
 public:
 
-    //Constructor
+    //Constructors
     LanekeepingController(World& world, Vehicle_T& vehicle, BasicProfile& profile); 
+    LanekeepingController();
+
     AuxVars_T updateInput(const LocalState_T& localState, ControlInput& controlInput);
 
     //Destructor

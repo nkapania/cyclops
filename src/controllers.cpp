@@ -35,6 +35,9 @@ LanekeepingController::LanekeepingController(World& world, Vehicle_T& vehicle, B
 
 }
 
+LanekeepingController::LanekeepingController(){
+	}
+
 
 double LanekeepingController::getDeltaFB(const LocalState_T& localState,const double betaFFW){
 	double kLK = this->kLK;

@@ -50,6 +50,11 @@ struct ControlInput{
 	double Fx; 
 };
 
+struct GlobalState_T{
+	double X; 
+	double Y;
+	double Psi;
+};
 
 
 void loadVehicleShelley(Vehicle_T& vehicle);
