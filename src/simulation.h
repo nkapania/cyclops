@@ -1,40 +1,42 @@
 #pragma once
+
 #include "world.h"
 #include "sim_types.h"
 #include "speed_profiles.h"
 #include "controllers.h"
+#include "tiremodels.h"
+
+
+enum Physics
+{
+    BICYCLE //TO DO: add support for more physics
+};
+
+enum WeightTransferType
+{
+    NONE,
+    STEADYSTATE
+};
+
+enum Tires
+{
+    FIALA,
+    COUPLED,
+    LINEAR
+};
+
+enum MapMatchType
+{
+    EULER,
+    EMBED,
+    CLOSEST
+};
+
 
 // Defines a class that implements the main simulation functionality
 
 class Simulation{
 private:
-    
-
-    enum Physics
-    {
-        BICYCLE //TO DO: add support for more physics
-    };
-
-    enum WeightTransferType
-    {
-        NONE,
-        STEADYSTATE
-    };
-
-    enum Tires
-    {
-        FIALA,
-        COUPLED,
-        LINEAR
-    };
-
-    enum MapMatchType
-    {
-        EULER,
-        EMBED,
-        CLOSEST
-    };
-
 
     World world;
     Vehicle_T vehicle;
@@ -73,3 +75,11 @@ public:
     ~Simulation();
 
     };
+
+
+// other functions not part of class
+
+void getFx(double& FxF,double& FxR,const double FxDes,const double Ux,const Vehicle_T& vehicle);
+void getSlips(double& alphaF,double& alphaR,const LocalState_T localState,const Vehicle_T& vehicle,const ControlInput controlInput);
+void getNormalForces(double& FzF,double& FzR, WeightTransferType wtType, const double Fx, const Vehicle_T& vehicle);
+

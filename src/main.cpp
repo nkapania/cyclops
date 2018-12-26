@@ -5,7 +5,7 @@
 #include <string>
 #include "matplotlibcpp.h"
 #include "controllers.h"
-#include "simulation.h"
+// #include "simulation.h"
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
 
 	BasicProfile speedProfile(vehicle, world, friction, vMax);
 	LanekeepingController controller(world, vehicle, speedProfile);
-	Simulation simulation(world, vehicle, controller, speedProfile);
+	// Simulation simulation(world, vehicle, controller, speedProfile);
 
 	std::cout << "done" << std::endl;
 

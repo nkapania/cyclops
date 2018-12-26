@@ -1,7 +1,9 @@
 #include "simulation.h"
 #include <iostream>
 #include <cmath>
+#include "tiremodels.h"
 
+//functions not included as part of simulation class
 //Constructor::
 Simulation::Simulation(World& world, Vehicle_T& vehicle,
  LanekeepingController& controller, BasicProfile& profile){
@@ -94,10 +96,10 @@ void Simulation::checkForTermination(const LocalState_T& localState,const int co
 
 void Simulation::updateState(const ControlInput& controlInput, LocalState_T& localState, GlobalState_T& globalState, AuxVars_T& auxVars){
 	double K = auxVars.K;
-	UxDes = auxVars.UxDes;
+	double UxDes = auxVars.UxDes;
 
 	if (this->physics == BICYCLE){
-		bicycleModel(controlInput, localState, globalState, K)
+		bicycleModel(controlInput, localState, globalState, K);
 	}
 
 	// to do implement other types of physics (e..g 4 wheeled)
@@ -107,9 +109,9 @@ void Simulation::updateState(const ControlInput& controlInput, LocalState_T& loc
 
 void Simulation::printStatus(const LocalState_T& localState, const int counter){
 	double sEnd = *this->world.s.end();
-	double pctComplete = ceil( 100 * (localState.s + sEnd * this->lapNumber) / (sEnd * this->desiredLaps))
+	double pctComplete = ceil( 100 * (localState.s + sEnd * this->lapNumber) / (sEnd * this->desiredLaps));
 
-	if (mod(counter, 100) == 0){
+	if (counter % 100 == 0){
 		std::cout << "Simulation is " << pctComplete << "percent done " << std::endl;
 	}
 
@@ -135,7 +137,7 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 	double r = localState.r; 
 	double Uy = localState.Uy;
 	double e = localState.e; 
-	double deltaPsi = localState.deltaPsi; 
+	double deltaPsi = localState.dPsi; 
 	double s = localState.s; 
 
 	double X = globalState.X;
@@ -145,13 +147,13 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 	double m = this->vehicle.m;
 	double a = this->vehicle.a;
 	double b = this->vehicle.b;
-	double Iz = this=>vehicle.Iz;
+	double Iz = this->vehicle.Iz;
 
 	//calculate forces and tire slips
 	double FxF, FxR, FzF, FzR;
 
-	getFx(FxF, Fxr, FxDes, Ux, this->vehicle); 
-	getNormalForces(FzF, Fzr, this->wtType, FxF+FxR, vehicle);
+	getFx(FxF, FxR, FxDes, Ux, this->vehicle); 
+	getNormalForces(FzF, FzR, this->wtType, FxF+FxR, vehicle);
 
 	double alphaF, alphaR;
 
@@ -162,7 +164,7 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 	if (this->tires == COUPLED){
 		coupledTireForces(FyF, FyR, zetaF, zetaR, alphaF, alphaR, FxF, FxR, FzF, FzR, vehicle); 
 	}
-	else if (this->tires == FIALA_{
+	else if (this->tires == FIALA){
 		//just set FxF and FxR to 0
 		coupledTireForces(FyF, FyR, zetaF, zetaR, alphaF, alphaR, 0, 0, FzF, FzR, vehicle)
 	}
@@ -176,13 +178,15 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 	}
 
 	else{
-		std::cerr<<"improper tire type specified"<<endl;
+		std::cerr<<"improper tire type specified"<<std::endl;
 	}
 
 	//Calculate state derivatives and update
-	dUy = (FyF + FyR) / m - r*Ux;
-	dr  = (a*FyF - b*FyR) / Iz;
-	dUx = Uy * r + (FxF + FxR - FyF * delta) / m;
+	double dUy = (FyF + FyR) / m - r*Ux;
+	double dr  = (a*FyF - b*FyR) / Iz;
+	double dUx = Uy * r + (FxF + FxR - FyF * delta) / m;
+
+	double de; double ds; double dDeltaPsi;
 
 	if (matchType == EULER){
 		de = Uy * cos(deltaPsi) + Ux * sin(deltaPsi);
@@ -190,27 +194,27 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 		dDeltaPsi = r - K  * Ux;
 	}
 
-	dX = - Uy * cos(psi) - Ux * sin(psi)
-	dY =   Ux * cos(psi) - Uy * sin(psi)
-	dotPsi = r 
+	double dX = - Uy * cos(psi) - Ux * sin(psi);
+	double dY =   Ux * cos(psi) - Uy * sin(psi);
+	double dotPsi = r; 
 
 	//Update states with Euler integration
-	Uy = Uy + ts * dUy
-	r  = r + ts * dr
-	Ux = Ux + ts * dUx
-	X = X + ts*dX
-	Y = Y + ts*dY
-	psi = psi + ts*dotPsi
+	Uy = Uy + ts * dUy;
+	r  = r + ts * dr;
+	Ux = Ux + ts * dUx;
+	X = X + ts*dX;
+	Y = Y + ts*dY;
+	psi = psi + ts*dotPsi;
 
 	//For Euler integration, update states with ODEs
-	if matchType == EULER{
-		e = e + ts*de
-		s = s + ts*ds
+	if (matchType == EULER){
+		e = e + ts*de;
+		s = s + ts*ds;
 		deltaPsi = deltaPsi + ts * dDeltaPsi; 
 	}
 
 	//update local state and global state
-	localState.e = e; localState.s = s; localState.deltaPsi = deltaPsi; 
+	localState.e = e; localState.s = s; localState.dPsi = deltaPsi; 
 	localState.Ux = Ux; localState.Uy = Uy; localState.r = r; 
 	globalState.X = X; globalState.Y = Y; globalState.Psi = psi; 
 
@@ -219,6 +223,65 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 
 
 
+void getFx(double& FxF,double& FxR,const double FxDes,const double Ux,const Vehicle_T& vehicle){
+	//implement engine and brake limits
+	double Fx; 
+	if (FxDes > 0): 
+		if Ux == 0{
+			Fx = FxDes;
+		}
+		else{
+			Fx = std::min(vehicle.powerLimit / Ux - 0.7 * pow(Ux, 2) - 300, FxDes);
+		}
+
+	else{
+		Fx = FxDes;
+	}
+
+	//Distribute according to weight
+	FxF = Fx * vehicle.b / vehicle.L; 
+	FxR = Fx * vehicle.a / vehicle.L; 
+}
+
+void getSlips(double& alphaF,double& alphaR,const LocalState_T localState,const Vehicle_T& vehicle,const ControlInput controlInput){
+	double Ux = localState.Ux;
+	double Uy = localState.Uy; 
+	double r = localState.r;
+	delta = controlInput.delta;
+
+	if (Ux < 2.0){
+		alphaF = 0 //speed too low to get slip estimate
+		alphaR = 0
+	}
+	else{
+		alphaF = atan( (Uy + vehicle.a * r) / Ux ) - delta;
+		alphaR = atan( (Uy - vehicle.b * r) / Ux ); 
+	}
+}
+
+void getNormalForces(double& FzF,double& FzR, WeightTransferType wtType, const double Fx, const Vehicle_T& vehicle){
+	if (wt == NONE){
+		//return the static normal forces
+		FzF = vehicle.FzF;
+		FzR = vehicle.FzR; 
+
+	}
+	else if (wt == STEADYSTATE){
+		double L = vehicle.a + vehicle.b; 
+		m = vehicle.m; 
+		a = vehicle.a;
+		b = vehicle.b; 
+		g = vehicle.g; 
+		h = vehicle.h; 
+
+		FzF = 1 / L * (m*b*g - h * Fx); 
+		FzR = 1 / L * (m*a*g + h * Fx);
+	}
+
+	else{
+		std::cerr<<"invalid wt transfer type specified"<<std::endl;
+	}
+}
 
 
 
