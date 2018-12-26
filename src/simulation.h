@@ -3,6 +3,7 @@
 #include "sim_types.h"
 #include "speed_profiles.h"
 #include "controllers.h"
+#include "tiremodels.h"
 
 // Defines a class that implements the main simulation functionality
 
@@ -30,7 +31,7 @@ private:
 
     enum MapMatchType
     {
-        NO,
+        EULER,
         EMBED,
         CLOSEST
     };
@@ -59,7 +60,9 @@ private:
     void printStatus(const LocalState_T& localState, const int counter);
     void updateState(const ControlInput& controlInput, LocalState_T& localState, GlobalState_T& globalState, AuxVars_T& auxVars);
     void bicycleModel(const ControlInput& controlInput, LocalState_T& localState, GlobalState_T& globalState, const double K);
-
+    void getFx(double& FxF,double& FxR,const double FxDes,const double Ux);
+    void getNormalForces(double& FzF,double& FzR, const double Fx);
+    void getSlips(double& alphaF,double& alphaR,const LocalState_T localState,const ControlInput controlInput);
 
 
 public:
