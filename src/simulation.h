@@ -30,7 +30,7 @@ private:
 
     enum MapMatchType
     {
-        NO,
+        EULER,
         EMBED,
         CLOSEST
     };
