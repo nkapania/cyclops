@@ -125,36 +125,6 @@ void Simulation::incrementLapNumber(const double s){
 
 }
 
-void Simulation::updateState(const ControlInput& controlInput, LocalState_T& localState, GlobalState_T& globalState, AuxVars_T& auxVars){
-	double K = auxVars.K;
-	double UxDes = auxVars.UxDes;
-
-	if (this->physics == BICYCLE){
-		bicycleModel(controlInput, localState, globalState, K);
-	}
-
-	// to do implement other types of physics (e..g 4 wheeled)
-
-}
-
-void Simulation::printStatus(const LocalState_T& localState, const int counter){
-	double sEnd = *this->world.s.end();
-	double pctComplete = ceil( 100 * (localState.s + sEnd * this->lapNumber) / (sEnd * this->desiredLaps));
-
-	if (counter % 100 == 0){
-		std::cout << "Simulation is " << pctComplete << "percent done " << std::endl;
-	}
-
-}
-
-void Simulation::incrementLapNumber(const double s){
-	//method to check if we have elapsed a lap
-
-	if (this->last_s > s) this->lapNumber ++;
-	this->last_s = s;
-
-}
-
 void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& localState, GlobalState_T& globalState, const double K){
 	
 	//unpack variables for brevity
