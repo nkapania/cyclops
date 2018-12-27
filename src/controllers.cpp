@@ -63,13 +63,12 @@ double LanekeepingController::speedTracking(const LocalState_T& localState){
 	double s = localState.s;
 	double Ux = localState.Ux;
 
-	//TODO: Get help for why we can't find interpolate1D function
+	
 	double AxDes = 0;
 	double UxDes = 0;
 
-	//interpolate1D(sTable, AxTable, sTable.size(), s, AxDes);
-	//InterpData_T out2;// = interpolate1D(sTable, UxTable, sTable.size(), s, UxDes);
-
+	interpolate1D(sTable, AxTable, sTable.size(), s, AxDes);
+	interpolate1D(sTable, UxTable, sTable.size(), s, UxDes);
 
 	double FxFFW = m*AxDes + sgn(Ux)*fdrag*pow(Ux, 2) + frr*sgn(Ux);
 	double FxFB  = -this->kSpeed * (Ux - UxDes); //feedback

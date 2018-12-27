@@ -71,13 +71,13 @@ void Simulation::checkForTermination(const LocalState_T& localState,const int co
 	double t = counter * this-> ts;
 	this->incrementLapNumber(localState.s);
 
-	double endS = *this->world.s.end()-this->buffer;
+	double endS = *(this->world.s.end()-1)-this->buffer;
 
 	if (localState.s > endS && this->lapNumber == this->desiredLaps - 1) //Stop simulation a little before end of path
 	{
 		this->isRunning = false;
 		double runTime = counter * this->ts;
-		std::cout << "Simulation complete - total time " << runTime << "seconds" << std::endl;
+		std::cout << "Simulation complete - total time " << runTime << " seconds" << std::endl;
 
 	}
 
@@ -107,11 +107,11 @@ void Simulation::updateState(const ControlInput& controlInput, LocalState_T& loc
 
 
 void Simulation::printStatus(const LocalState_T& localState, const int counter){
-	double sEnd = *this->world.s.end();
+	double sEnd = *(this->world.s.end()-1);
 	double pctComplete = ceil( 100 * (localState.s + sEnd * this->lapNumber) / (sEnd * this->desiredLaps));
 
 	if (counter % 100 == 0){
-		std::cout << "Simulation is " << pctComplete << "percent done " << std::endl;
+		std::cout << "Simulation is " << pctComplete << " percent done " << std::endl;
 	}
 
 }
