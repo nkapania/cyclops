@@ -2,9 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
-#include <math.h>
 #include <iostream>
-#include "matplotlibcpp.h"
 
 //Constructors
 BasicProfile::BasicProfile(Vehicle_T& vehicleIn, World& worldIn, double frictionIn, double vMaxIn, double AxMaxIn){
@@ -80,7 +78,6 @@ void BasicProfile::generateBasicProfileClosed(){
 }
 
 void BasicProfile::genSpeed(std::vector<double>& UxShift, std::vector<double>& AxShift, std::vector<double> kShifted, double minUx, double maxUx, double AxMax, double AyMax){
-	const double g = 9.81; 
 	std::vector<double> s = this->s;
 	double numSteps = s.size();
 

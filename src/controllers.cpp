@@ -1,9 +1,8 @@
 #include "controllers.h"
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include "speed_profiles.h"
 #include "tiremodels.h"
-#include "matplotlibcpp.h"
 #include <iostream>
 #include "utils.h"
 #include "sim_types.h"

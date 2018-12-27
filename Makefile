@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++0x -I/usr/include/python2.7 -lpython2.7
+CXXFLAGS := -std=c++0x
 
 INC_DIR = inc
 SRC_DIR = src
@@ -14,7 +14,7 @@ $(TARGET): $(OBJS_CXX)
 	$(CXX) -o $(TARGET) $(OBJS_CXX) 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCS)
-	$(CXX) -c -o $@ $< -I$(INC_DIR) -I$(FBS_DIR) $(CXXFLAGS)
+	$(CXX) -c -o $@ $< -I$(INC_DIR) $(CXXFLAGS)
 
 clean:
 	$(RM) $(TARGET) $(OBJS_CXX) 

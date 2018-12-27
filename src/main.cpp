@@ -3,18 +3,14 @@
 #include "world.h"
 #include "speed_profiles.h"
 #include <string>
-#include "matplotlibcpp.h"
 #include "controllers.h"
 #include "simulation.h"
 
 int main()
 {
-
-	namespace plt = matplotlibcpp;
-
 	Vehicle_T vehicle;
 	World world;
-	std::string fileName="../maps/simpleRace.csv";
+	std::string fileName="/home/nkapania/cyclops/maps/simpleRace.csv";
 
 	loadVehicleShelley(vehicle);
 	world.loadFromCSV(fileName);
