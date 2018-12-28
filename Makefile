@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++0x
+CXXFLAGS := -std=c++0x -Wall
 
 INC_DIR = inc
 SRC_DIR = src

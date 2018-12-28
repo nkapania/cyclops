@@ -155,3 +155,14 @@ template<typename Container>
 void constTimeInterp(const InterpData_T& interp, const Container& y, double& yq) {
     yq = y[interp.low_idx] + interp.frac*(y[interp.low_idx+1]-y[interp.low_idx]);
 }
+
+double crossSign(double u1, double u2, double v1, double v2)
+ {
+    double cross = u1*v2 - v1*u2;
+    if (cross > 0) {
+        return 1.0;
+    } else if (cross < 0) {
+        return -1.0;
+    }
+    return 0.0;
+}

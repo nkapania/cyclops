@@ -56,5 +56,15 @@ struct GlobalState_T{
 	double Psi;
 };
 
+struct MapMatchOutput_T{
+	double e;
+	double s;
+	double K;
+	double psiDes;
+	bool converged;
+	int iterations;
+	double smallestNorm;
+};
+
 
 void loadVehicleShelley(Vehicle_T& vehicle);

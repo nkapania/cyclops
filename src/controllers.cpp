@@ -125,6 +125,8 @@ AuxVars_T LanekeepingController::updateInput(const LocalState_T& localState, Con
 	//to do: populate; 
 	AuxVars_T out = {};
 
+	return out;
+
 	}
 
 //Destructor

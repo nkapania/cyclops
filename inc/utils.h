@@ -52,3 +52,5 @@ std::vector<double> linspace(double a, double b, int n);
 template <typename T> int sgn(T val);
 
 double force2alpha(std::vector<double>& forceTable, std::vector<double>&alphaTable, double Fdes);
+
+double crossSign(double u1, double u2, double v1, double v2);

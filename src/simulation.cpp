@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include "tiremodels.h"
+#include "mapmatch.h"
 
 //Constructor::
 Simulation::Simulation(World& world, Vehicle_T& vehicle,
@@ -17,7 +18,7 @@ Simulation::Simulation(World& world, Vehicle_T& vehicle,
  	this-> maxTime = 99999999.0; 
  	this-> vStart = 10.0;
  	this-> wtType = NONE;
- 	this-> matchType = EULER;
+ 	this-> matchType = EMBED;
  	this-> tires = FIALA;
  	this-> desiredLaps = 1;
  	this-> lapNumber = 0; 
@@ -46,6 +47,8 @@ void Simulation::simulate(){
 	globalState.Y = this->world.posN[0];
 	globalState.Psi = this->world.roadPsi[0];
 
+	//initialize map match if not using euler update
+	MapMatch mapMatch(this->world);
 	ControlInput controlInput;
 
 	//start the counter
@@ -53,6 +56,11 @@ void Simulation::simulate(){
 
 	//Run the simulation!
 	while (this->isRunning){
+		//perform localization if not using euler update
+		if (this->matchType != EULER){
+			mapMatch.localize(localState, globalState);
+		}
+
 		this->checkForTermination(localState, counter);
 		AuxVars_T auxVars = this->controller.updateInput(localState, controlInput);
 		this->updateState(controlInput, localState, globalState, auxVars);
@@ -60,6 +68,8 @@ void Simulation::simulate(){
 		counter++;
 
 		this->printStatus(localState, counter);
+
+		std::cout << globalState.X << " "<< globalState.Y << " "<< localState.s << std::endl;
 
 	}
 

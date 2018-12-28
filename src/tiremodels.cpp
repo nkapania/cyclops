@@ -36,7 +36,7 @@ void coupledTire(double& Fy, double& zeta, const double alpha, const double Fx,
 	const double Fz, const double muS, const double muP,const double C){
 
 	if (pow(muP * Fz, 2) > pow(Fx, 2)){
-		double arg = std::fmax( pow((muP, Fz), 2) - pow(Fx, 2), 0); 
+		double arg = std::fmax( pow((muP*Fz), 2) - pow(Fx, 2), 0); 
 		zeta = std::sqrt(arg) / (muP*Fz);
 
 		}
