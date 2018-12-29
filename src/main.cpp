@@ -15,7 +15,7 @@ int main()
 	loadVehicleShelley(vehicle);
 	world.loadFromCSV(fileName);
 
-	double friction = 0.90;
+	double friction = 0.6;
 	double vMax = 99.0;
 
 	BasicProfile speedProfile(vehicle, world, friction, vMax);

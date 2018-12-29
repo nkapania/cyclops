@@ -4,6 +4,7 @@
 #include <complex> //complex
 #include "utils.h"
 #include "world.h"
+#include <iostream> //debugging
 
 MapMatch::MapMatch(World& world){
 	this->world = world;
@@ -74,11 +75,11 @@ MapMatchOutput_T MapMatch::convertToLocal(const double posE, const double posN){
 	int numForwardIterations = 0;
 	double currentPair;
 
-	while (stillDecreasing and (numForwardIterations < this->MAX_FORWARD_ITERS)){
+	while (stillDecreasing and numForwardIterations < this->MAX_FORWARD_ITERS){
 		numForwardIterations++;
 		if (forwardInd <= m-2){
 			std::complex<double> EN0 (world.posE[forwardInd], world.posN[forwardInd]);
-			std::complex<double> EN1 (world.posN[forwardInd+1], world.posN[forwardInd+1]);
+			std::complex<double> EN1 (world.posE[forwardInd+1], world.posN[forwardInd+1]);
 			currentPair = std::norm(EN - EN0) + std::norm(EN-EN1);
 		}
 		else{
@@ -94,22 +95,24 @@ MapMatchOutput_T MapMatch::convertToLocal(const double posE, const double posN){
 
 		}
 
-		bool stillDecreasing = currentPair < lastPair;
-
+		stillDecreasing = (currentPair < lastPair);
 		if (stillDecreasing){
 			lastPair = currentPair;
-		}
-
-		//allow searching at beginning of map if map is closed
-		if (forwardInd == m-1 && !world.isOpen){
-			forwardInd = 0;
-		}
-		else{
-			forwardInd ++;
+		
+			//allow searching at beginning of map if map is closed
+			if (forwardInd == m-1 && !world.isOpen){
+				forwardInd = 0;
+			}
+			else{
+				forwardInd ++;
+			}
 		}
 	}
 
+	forwardInd--; //needed because we increment by one even after 
+
 	double smallestF = lastPair; 
+
 	lastPair = 9999999; //inf
 	int backwardInd = this->seed;
 	stillDecreasing = true;
@@ -135,13 +138,13 @@ MapMatchOutput_T MapMatch::convertToLocal(const double posE, const double posN){
 			else{
 				std::complex<double> EN0 (world.posE[backwardInd], world.posN[backwardInd]);
 				std::complex<double> EN1 (world.posE[m-1]        , world.posN[m-1]); 
-				currentPair = currentPair = std::norm(EN - EN0) + std::norm(EN-EN1);
+				currentPair = std::norm(EN - EN0) + std::norm(EN-EN1);
 
 			}
 
 		}
 
-		bool stillDecreasing = currentPair < lastPair; 
+		stillDecreasing = (currentPair < lastPair); 
 		if (stillDecreasing){
 			lastPair = currentPair; 
 
@@ -150,42 +153,41 @@ MapMatchOutput_T MapMatch::convertToLocal(const double posE, const double posN){
 				backwardInd = m-1;
 			}
 			else{
-				backwardInd = backwardInd - 1;
+				backwardInd--;
 			}
-
 		}
 
-		smallestB = lastPair; 
+	}
 
-		if (smallestB < smallestF){
-			if (backwardInd > 0){
-				lowSind = backwardInd - 1;
-			}
+	smallestB = lastPair; 
 
-			else{
-				lowSind = m - 2;
+	if (smallestB < smallestF){
+		if (backwardInd > 0){
+			lowSind = backwardInd - 1;
+		}
+
+		else{
+			lowSind = m - 2;
 				//This should be m-1, but paths are defined so that
 				//the last point overlaps with the first point. This will
 				//mess up the cross product below, so we just go back one index
 				// when we cross to the next lap. 
-			}
-
-			highSind  = backwardInd;
 		}
 
-		else{
-			int lowSInd = forwardInd;
-			if (forwardInd < m-1){
-				highSind = forwardInd + 1;
-			}
-			else{
-				highSind = 1;
-				//This should be 0, but paths are defined so that the last
-				//point overlaps with the first point. This messes up the
-				//cross product, so just go up one index when we cross to the
-				//next laps
-			}
+		highSind  = backwardInd;
+	}
 
+	else{
+		lowSind = forwardInd;
+		if (forwardInd < m-1){
+			highSind = forwardInd + 1;
+		}
+		else{
+			highSind = 1;
+			//This should be 0, but paths are defined so that the last
+			//point overlaps with the first point. This messes up the
+			//cross product, so just go up one index when we cross to the
+			//next laps
 		}
 
 	}

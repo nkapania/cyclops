@@ -43,9 +43,9 @@ void Simulation::simulate(){
 	localState.Ux = Ux0;
 
 	GlobalState_T globalState;
-	globalState.X = this->world.posE[0];
-	globalState.Y = this->world.posN[0];
-	globalState.Psi = this->world.roadPsi[0];
+	globalState.X = this->world.posE[1];
+	globalState.Y = this->world.posN[1];
+	globalState.Psi = this->world.roadPsi[1];
 
 	//initialize map match if not using euler update
 	MapMatch mapMatch(this->world);
@@ -68,8 +68,6 @@ void Simulation::simulate(){
 		counter++;
 
 		this->printStatus(localState, counter);
-
-		std::cout << globalState.X << " "<< globalState.Y << " "<< localState.s << std::endl;
 
 	}
 
@@ -97,7 +95,11 @@ void Simulation::checkForTermination(const LocalState_T& localState,const int co
 		this->isRunning = false;
 	}
 
-
+	//check if something funky is happening
+	if (localState.s < 0){
+		this->isRunning = false;
+		std::cout << "Uh oh - showing negative s values!! " << std::endl;
+	}
 
 
 }
@@ -126,12 +128,12 @@ void Simulation::printStatus(const LocalState_T& localState, const int counter){
 
 }
 
-
+//disabled for now because map match is jittery ... weird. 
 void Simulation::incrementLapNumber(const double s){
 	//method to check if we have elapsed a lap
 
-	if (this->last_s > s) this->lapNumber ++;
-	this->last_s = s;
+	// if (this->last_s > s) this->lapNumber ++;
+	// this->last_s = s;
 
 }
 
