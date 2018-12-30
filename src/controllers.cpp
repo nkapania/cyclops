@@ -48,7 +48,7 @@ double LanekeepingController::getDeltaFB(const LocalState_T& localState,const do
 	return deltaFB;
 }
 
-double LanekeepingController::speedTracking(const LocalState_T& localState){
+double LanekeepingController::speedTracking(const LocalState_T& localState, double& UxDes, double& AxDes, double& FxFFW, double& FxFB){
 	//Unpack vectors for readability
 
 	std::vector<double> AxTable = this-> profile.Ax;
@@ -62,22 +62,18 @@ double LanekeepingController::speedTracking(const LocalState_T& localState){
 	double s = localState.s;
 	double Ux = localState.Ux;
 
-	
-	double AxDes = 0;
-	double UxDes = 0;
-
 	interpolate1D(sTable, AxTable, sTable.size(), s, AxDes);
 	interpolate1D(sTable, UxTable, sTable.size(), s, UxDes);
 
-	double FxFFW = m*AxDes + sgn(Ux)*fdrag*pow(Ux, 2) + frr*sgn(Ux);
-	double FxFB  = -this->kSpeed * (Ux - UxDes); //feedback
+	FxFFW = m*AxDes + sgn(Ux)*fdrag*pow(Ux, 2) + frr*sgn(Ux);
+	FxFB  = -this->kSpeed * (Ux - UxDes); //feedback
 	double FxCommand = FxFFW + FxFB;
 
 	return FxCommand;
 
 }
 
-double LanekeepingController::getDeltaFFW(const LocalState_T& localState,double& betaFFW,const double K){
+double LanekeepingController::getDeltaFFW(const LocalState_T& localState,double& betaFFW,const double K, double& FyFdes, double& FyRdes, double& alphaFdes, double& alphaRdes){
 	double a = this->vehicle.a;
 	double b = this->vehicle.b;
 	double L = this->vehicle.L;
@@ -85,11 +81,11 @@ double LanekeepingController::getDeltaFFW(const LocalState_T& localState,double&
 
 	double Ux = localState.Ux;
 
-	double FyFdes = b / L * m * pow(Ux, 2) * K ;
-	double FyRdes = a / b * FyFdes;
+	FyFdes = b / L * m * pow(Ux, 2) * K ;
+	FyRdes = a / b * FyFdes;
 
-	double alphaFdes = force2alpha(this->FyFtable, this->alphaFtable, FyFdes);
-	double alphaRdes = force2alpha(this->FyRtable, this->alphaRtable, FyRdes);
+	alphaFdes = force2alpha(this->FyFtable, this->alphaFtable, FyFdes);
+	alphaRdes = force2alpha(this->FyRtable, this->alphaRtable, FyRdes);
 
 	betaFFW = alphaRdes + b*K;
 	double deltaFFW = K * L + alphaRdes - alphaFdes;
@@ -98,17 +94,16 @@ double LanekeepingController::getDeltaFFW(const LocalState_T& localState,double&
 
 }
 
-double LanekeepingController::lanekeeping(const LocalState_T& localState){
+double LanekeepingController::lanekeeping(const LocalState_T& localState, double& deltaFFW, double& deltaFB, double& K, double& alphaFdes, double& alphaRdes, double& betaFFW){
 	std::vector<double> sTable = this->world.s;
 	std::vector<double> kTable = this->world.curvature;
 	double s = localState.s;
 
 
-	double K;
-	double betaFFW; 
+	double FyFdes; double FyRdes; 
 	interpolate1D(sTable, kTable, kTable.size(), s, K);
-	double deltaFFW = this-> getDeltaFFW(localState, betaFFW,  K);
-	double deltaFB  = this-> getDeltaFB (localState, betaFFW);
+	deltaFFW = this-> getDeltaFFW(localState, betaFFW,  K, FyFdes, FyRdes, alphaFdes, alphaRdes);
+	deltaFB  = this-> getDeltaFB (localState, betaFFW);
 	double delta = deltaFFW + deltaFB;
 
 	return delta; 
@@ -116,14 +111,26 @@ double LanekeepingController::lanekeeping(const LocalState_T& localState){
 
 
 AuxVars_T LanekeepingController::updateInput(const LocalState_T& localState, ControlInput& controlInput){
-	double delta = this->lanekeeping(localState);
-	double Fx = this-> speedTracking(localState);
+	
+	double deltaFFW, deltaFB, K, alphaFdes, alphaRdes;
+	double betaFFW, UxDes, AxDes, FxFFW, FxFB;
+
+	double delta = this->lanekeeping(localState, deltaFFW, deltaFB, K, alphaFdes, alphaRdes, betaFFW);
+	double Fx = this-> speedTracking(localState, UxDes, AxDes, FxFFW, FxFB);
 
 	controlInput.delta = delta;
 	controlInput.Fx = Fx;  
 
-	//to do: populate; 
+	
 	AuxVars_T out = {};
+	out.K = K;
+	out.UxDes = UxDes;
+	out.AxDes = AxDes;
+	out.alphaFdes = alphaFdes;
+	out.alphaRdes = alphaRdes;
+	out.deltaFFW = deltaFFW;
+	out.deltaFB = deltaFB;
+	out.betaFFW = betaFFW;
 
 	return out;
 

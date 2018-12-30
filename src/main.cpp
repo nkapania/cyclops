@@ -5,9 +5,11 @@
 #include <string>
 #include "controllers.h"
 #include "simulation.h"
+#include "matplotlibcpp.h"
 
 int main()
 {
+	namespace plt = matplotlibcpp;
 	Vehicle_T vehicle;
 	World world;
 	std::string fileName="/home/nkapania/cyclops/maps/simpleRace.csv";
@@ -21,7 +23,16 @@ int main()
 	BasicProfile speedProfile(vehicle, world, friction, vMax);
 	LanekeepingController controller(world, vehicle, speedProfile);
 	Simulation simulation(world, vehicle, controller, speedProfile);
-	simulation.simulate();
+	SimOutput_T simOut = simulation.simulate();
+
+	plt::figure();
+	plt::plot(simOut.s, simOut.Ux);
+	plt::figure();
+	plt::plot(simOut.s, simOut.Uy); 
+	plt::figure();
+	plt::plot(simOut.s, simOut.r);
+	plt::show();
+
 
 	return 0;
 }

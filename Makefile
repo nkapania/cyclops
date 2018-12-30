@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++0x -Wall
+CXXFLAGS := -std=c++0x -Wall -I/usr/include/python2.7 -lpython2.7
 
 INC_DIR = inc
 SRC_DIR = src

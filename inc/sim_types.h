@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 struct Vehicle_T{
 	double a; 
@@ -64,6 +65,41 @@ struct MapMatchOutput_T{
 	bool converged;
 	int iterations;
 	double smallestNorm;
+};
+
+struct SimOutput_T{
+	std::vector<double> AxDes;
+	std::vector<double> UxDes;
+	std::vector<double> t;
+	std::vector<double> K;
+	std::vector<double> alphaFdes;
+	std::vector<double> alphaRdes;
+	std::vector<double> deltaFFW;
+	std::vector<double> deltaFB;		
+	std::vector<double> betaFFW;
+	std::vector<double> Ux;
+	std::vector<double> Ax;		
+	std::vector<double> s;
+	std::vector<double> e;
+	std::vector<double> lapNumber;
+	std::vector<double> deltaPsi;
+	std::vector<double> posE;		
+	std::vector<double> posN;
+	std::vector<double> psi;
+	std::vector<double> r;
+	std::vector<double> Uy;
+	std::vector<double> deltaCmd;
+	std::vector<double> FxCmd;
+	std::vector<double> alphaF;
+	std::vector<double> alphaR;	
+	std::vector<double> FxF;
+	std::vector<double> FxR;
+	std::vector<double> FyF;
+	std::vector<double> FyR;	
+	std::vector<double> zetaF;
+	std::vector<double> zetaR;
+	std::vector<double> FzF;
+	std::vector<double> FzR;
 };
 
 

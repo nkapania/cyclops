@@ -30,9 +30,9 @@ private:
     std::vector<double> FyRtable; 
 
     double getDeltaFB(const LocalState_T& localState,const double betaFFW);
-    double speedTracking(const LocalState_T& localState);
-    double getDeltaFFW(const LocalState_T& localState,double& betaFFW,const double K);
-    double lanekeeping(const LocalState_T& localState); 
+    double speedTracking(const LocalState_T& localState, double& UxDes, double& AxDes, double& FxFFW, double& FxFB);
+    double getDeltaFFW(const LocalState_T& localState,double& betaFFW,const double K, double& FyFdes, double& FyRdes, double& alphaFdes, double& alphaRdes);
+    double lanekeeping(const LocalState_T& localState, double& deltaFFW, double& deltaFB, double& K, double& alphaFdes, double& alphaRdes, double& betaFFW); 
 
 public:
 

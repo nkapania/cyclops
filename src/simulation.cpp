@@ -18,7 +18,7 @@ Simulation::Simulation(World& world, Vehicle_T& vehicle,
  	this-> maxTime = 99999999.0; 
  	this-> vStart = 10.0;
  	this-> wtType = NONE;
- 	this-> matchType = EMBED;
+ 	this-> matchType = EULER;
  	this-> tires = FIALA;
  	this-> desiredLaps = 1;
  	this-> lapNumber = 0; 
@@ -35,7 +35,7 @@ Simulation::~Simulation(){
 	}
 
 
-void Simulation::simulate(){
+SimOutput_T Simulation::simulate(){
 //initialize states and instantiate objects
 
 	double Ux0 = this->profile.Ux[0];
@@ -50,6 +50,9 @@ void Simulation::simulate(){
 	//initialize map match if not using euler update
 	MapMatch mapMatch(this->world);
 	ControlInput controlInput;
+
+	//initialize output structure
+	SimOutput_T simOut; 
 
 	//start the counter
 	int counter = 0;
@@ -69,7 +72,32 @@ void Simulation::simulate(){
 
 		this->printStatus(localState, counter);
 
+
+		//append to output vector
+		simOut.Ux.push_back(localState.Ux);
+		simOut.r.push_back(localState.r);
+		simOut.Uy.push_back(localState.Uy);
+		simOut.e.push_back(localState.e);
+		simOut.deltaPsi.push_back(localState.dPsi);
+		simOut.s.push_back(localState.s);
+		simOut.AxDes.push_back(auxVars.AxDes);
+		simOut.UxDes.push_back(auxVars.UxDes);
+		simOut.t.push_back(counter * this->ts);
+		simOut.alphaFdes.push_back(auxVars.alphaFdes);
+		simOut.alphaRdes.push_back(auxVars.alphaRdes);
+		simOut.deltaFFW.push_back(auxVars.deltaFFW);
+		simOut.deltaFB.push_back(auxVars.deltaFB);
+		simOut.betaFFW.push_back(auxVars.betaFFW);
+		simOut.lapNumber.push_back(this->lapNumber);
+		simOut.posE.push_back(globalState.X);
+		simOut.posN.push_back(globalState.Y);
+		simOut.psi.push_back(globalState.Psi);
+		simOut.deltaCmd.push_back(controlInput.delta);
+		simOut.FxCmd.push_back(controlInput.Fx);
+
 	}
+
+	return simOut;
 
 
 }

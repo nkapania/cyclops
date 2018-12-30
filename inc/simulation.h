@@ -69,7 +69,7 @@ public:
 
     //Constructor
     Simulation(World& world, Vehicle_T& vehicle, LanekeepingController& controller, BasicProfile& profile); 
-    void simulate();
+    SimOutput_T simulate();
 
 
     //Destructor
