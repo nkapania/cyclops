@@ -6,6 +6,7 @@
 #include <iostream>
 #include "utils.h"
 #include "sim_types.h"
+#include <algorithm>
 
 //Constructor::
 
@@ -31,6 +32,13 @@ LanekeepingController::LanekeepingController(World& world, Vehicle_T& vehicle, B
 
     this-> FyFtable = fiala(vehicle.Cf, vehicle.muF, vehicle.muF, alphaFtable, vehicle.FzF);
     this-> FyRtable = fiala(vehicle.Cr, vehicle.muR, vehicle.muR, alphaRtable, vehicle.FzR);
+
+    //reverse order of arrays to keep consistency with Python version of code. 
+
+    std::reverse(this->alphaFtable.begin(), this->alphaFtable.end()); 
+    std::reverse(this->alphaRtable.begin(), this->alphaRtable.end()); 
+    std::reverse(this->FyFtable.begin(),    this->FyFtable.end()); 
+    std::reverse(this->FyRtable.begin(),    this->FyRtable.end()); 
 
 }
 

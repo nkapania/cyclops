@@ -3,6 +3,7 @@
 #include <cmath>
 #include "tiremodels.h"
 #include "mapmatch.h"
+#include "matplotlibcpp.h"
 
 //Constructor::
 Simulation::Simulation(World& world, Vehicle_T& vehicle,
@@ -58,6 +59,7 @@ SimOutput_T Simulation::simulate(){
 	int counter = 0;
 
 	//Run the simulation!
+	//while (counter < 1){
 	while (this->isRunning){
 		//perform localization if not using euler update
 		if (this->matchType != EULER){
@@ -94,6 +96,7 @@ SimOutput_T Simulation::simulate(){
 		simOut.psi.push_back(globalState.Psi);
 		simOut.deltaCmd.push_back(controlInput.delta);
 		simOut.FxCmd.push_back(controlInput.Fx);
+		simOut.K.push_back(auxVars.K);
 
 	}
 
@@ -317,4 +320,55 @@ void Simulation::getSlips(double& alphaF,double& alphaR,const LocalState_T local
 		alphaF = atan( (Uy + this->vehicle.a * r) / Ux ) - delta;
 		alphaR = atan( (Uy - this->vehicle.b * r) / Ux ); 
 	}
+}
+
+void plotResults(const SimOutput_T& simOut,const World& world){
+	namespace plt = matplotlibcpp;
+
+	//unpack arrays for plotting; 
+	plt::figure();
+	plt::plot(simOut.posE, simOut.posN);
+	plt::plot(world.posE , world.posN); 
+
+	plt::figure();
+	//double pi = 3.14159;
+	plt::plot(simOut.t, simOut.deltaPsi);
+	plt::plot(simOut.t, simOut.e);
+
+
+	plt::figure();
+	plt::plot();
+	plt::plot(simOut.t, simOut.Ux);
+	plt::plot(simOut.t, simOut.UxDes);
+
+	plt::figure();
+	plt::plot();
+	plt::plot(simOut.t, simOut.K);
+
+	plt::figure();
+	plt::plot();
+	plt::plot(simOut.t, simOut.deltaFB);
+	plt::plot(simOut.t, simOut.deltaFFW);
+
+	// plt::subplot(3, 1, 2);
+	// plt::plot(simOut.t, simOut.K);
+
+
+
+
+
+
+
+
+
+
+
+	plt::show();
+
+
+
+
+
+
+
 }

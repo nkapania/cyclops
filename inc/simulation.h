@@ -83,4 +83,4 @@ public:
 void getFx(double& FxF,double& FxR,const double FxDes,const double Ux,const Vehicle_T& vehicle);
 void getSlips(double& alphaF,double& alphaR,const LocalState_T localState,const Vehicle_T& vehicle,const ControlInput controlInput);
 void getNormalForces(double& FzF,double& FzR, WeightTransferType wtType, const double Fx, const Vehicle_T& vehicle);
-
+void plotResults(const SimOutput_T& simOut,const World& world);

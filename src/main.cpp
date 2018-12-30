@@ -25,14 +25,9 @@ int main()
 	Simulation simulation(world, vehicle, controller, speedProfile);
 	SimOutput_T simOut = simulation.simulate();
 
-	plt::figure();
-	plt::plot(simOut.s, simOut.Ux);
-	plt::figure();
-	plt::plot(simOut.s, simOut.Uy); 
-	plt::figure();
-	plt::plot(simOut.s, simOut.r);
-	plt::show();
 
+	//plot results
+	plotResults(simOut, world);
 
 	return 0;
 }
