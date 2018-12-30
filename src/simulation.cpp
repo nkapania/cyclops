@@ -19,7 +19,7 @@ Simulation::Simulation(World& world, Vehicle_T& vehicle,
  	this-> maxTime = 99999999.0; 
  	this-> vStart = 10.0;
  	this-> wtType = NONE;
- 	this-> matchType = EULER;
+ 	this-> matchType = EMBED;
  	this-> tires = FIALA;
  	this-> desiredLaps = 1;
  	this-> lapNumber = 0; 
@@ -329,28 +329,42 @@ void plotResults(const SimOutput_T& simOut,const World& world){
 	plt::figure();
 	plt::plot(simOut.posE, simOut.posN);
 	plt::plot(world.posE , world.posN); 
+	plt::title("Plot of World");
+	plt::xlabel("Pos E (m)");
+	plt::ylabel("Pos N (m)");
 
 	plt::figure();
-	//double pi = 3.14159;
-	plt::plot(simOut.t, simOut.deltaPsi);
+	// //double pi = 3.14159;
+	// plt::plot(simOut.t, simOut.deltaPsi);
 	plt::plot(simOut.t, simOut.e);
-
+	plt::title("Lateral Error");
+	plt::xlabel("Time (sec)");
+	plt::ylabel("Lateral Error (m)");	
 
 	plt::figure();
 	plt::plot();
 	plt::plot(simOut.t, simOut.Ux);
 	plt::plot(simOut.t, simOut.UxDes);
+	plt::title("Actual vs Desired Speed");
+	plt::xlabel("Time (sec)");
+	plt::ylabel("Speed (m/s)");
+	plt::legend();	
 
-	plt::figure();
-	plt::plot();
-	plt::plot(simOut.t, simOut.K);
+
+	// plt::figure();
+	// plt::plot();
+	// plt::plot(simOut.t, simOut.K);
 
 	plt::figure();
 	plt::plot();
 	plt::plot(simOut.t, simOut.deltaFB);
 	plt::plot(simOut.t, simOut.deltaFFW);
+	plt::title("Steering");
+	plt::xlabel("Time (sec)");
+	plt::ylabel("Steer Angle (rad)");
+	plt::legend();	
 
-	// plt::subplot(3, 1, 2);
+	// // plt::subplot(3, 1, 2);
 	// plt::plot(simOut.t, simOut.K);
 
 
