@@ -12,7 +12,8 @@ int main()
 	namespace plt = matplotlibcpp;
 	Vehicle_T vehicle;
 	World world;
-	std::string fileName="/home/nkapania/cyclops/maps/simpleRace.csv";
+	//std::string fileName="/home/nkapania/cyclops/maps/simpleRace.csv";
+	std::string fileName = "/home/nkapania/cyclops/maps/thunderhill_race_flatCSV.csv";
 
 	loadVehicleShelley(vehicle);
 	world.loadFromCSV(fileName);
@@ -21,6 +22,7 @@ int main()
 	double vMax = 99.0;
 
 	BasicProfile speedProfile(vehicle, world, friction, vMax);
+
 	LanekeepingController controller(world, vehicle, speedProfile);
 	Simulation simulation(world, vehicle, controller, speedProfile);
 	SimOutput_T simOut = simulation.simulate();

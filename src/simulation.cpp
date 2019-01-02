@@ -68,12 +68,15 @@ SimOutput_T Simulation::simulate(){
 
 		this->checkForTermination(localState, counter);
 		AuxVars_T auxVars = this->controller.updateInput(localState, controlInput);
+
 		this->updateState(controlInput, localState, globalState, auxVars);
 
 		counter++;
 
 		this->printStatus(localState, counter);
 
+
+		//std::cout << localState.e << " "<< localState.s << " "<<localState.dPsi << " "<<localState.r <<" "<< localState.Uy << " "<<localState.Ux << " "<<std::endl;
 
 		//append to output vector
 		simOut.Ux.push_back(localState.Ux);
@@ -226,6 +229,8 @@ void Simulation::bicycleModel(const ControlInput& controlInput, LocalState_T& lo
 	double dUy = (FyF + FyR) / m - r*Ux;
 	double dr  = (a*FyF - b*FyR) / Iz;
 	double dUx = Uy * r + (FxF + FxR - FyF * delta) / m;
+
+	//std::cout << Uy << " "<< r << " " << FxF << " " << FxR << " " << FyF << " "<< delta << " " << FxDes << " " << std::endl; 
 
 	double de; double ds; double dDeltaPsi;
 

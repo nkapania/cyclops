@@ -74,6 +74,8 @@ double LanekeepingController::speedTracking(const LocalState_T& localState, doub
 	interpolate1D(sTable, UxTable, sTable.size(), s, UxDes);
 
 	FxFFW = m*AxDes + sgn(Ux)*fdrag*pow(Ux, 2) + frr*sgn(Ux);
+	//std::cout << AxDes << " " << pow(Ux, 2) << " " << UxDes << std::endl;
+
 	FxFB  = -this->kSpeed * (Ux - UxDes); //feedback
 	double FxCommand = FxFFW + FxFB;
 

@@ -45,6 +45,7 @@ void MapMatch::localize(LocalState_T& localState, const GlobalState_T globalStat
 		}
 
 		double dPsi = globalState.Psi - psiDes;
+
 		while (dPsi > M_PI){
 			dPsi = dPsi - 2 * M_PI;
 		}
@@ -52,6 +53,7 @@ void MapMatch::localize(LocalState_T& localState, const GlobalState_T globalStat
 		while (dPsi < -M_PI){
 			dPsi = dPsi + 2 * M_PI;
 		}
+
 
 		localState.e = e;
 		localState.s = s; 
@@ -75,7 +77,7 @@ MapMatchOutput_T MapMatch::convertToLocal(const double posE, const double posN){
 	int numForwardIterations = 0;
 	double currentPair;
 
-	while (stillDecreasing and numForwardIterations < this->MAX_FORWARD_ITERS){
+	while (stillDecreasing && numForwardIterations < this->MAX_FORWARD_ITERS){
 		numForwardIterations++;
 		if (forwardInd <= m-2){
 			std::complex<double> EN0 (world.posE[forwardInd], world.posN[forwardInd]);
@@ -121,8 +123,8 @@ MapMatchOutput_T MapMatch::convertToLocal(const double posE, const double posN){
 	int lowSind;
 	int highSind;
 
-	while (stillDecreasing & (numBackwardIterations < this->MAX_BACKWARD_ITERS)){
-		numBackwardIterations += 1;
+	while (stillDecreasing && (numBackwardIterations < this->MAX_BACKWARD_ITERS)){
+		numBackwardIterations++;
 
 		if (backwardInd >=1){
 			std::complex<double> EN0 (world.posE[backwardInd], world.posN[backwardInd]);
@@ -217,8 +219,9 @@ MapMatchOutput_T MapMatch::convertToLocal(const double posE, const double posN){
 	double e = abs_e * crssSgn;
 
 	//compute K and psi desired via interpolation
-	double psiDes = world.roadPsi[lowSind] + (world.roadPsi[highSind] - world.roadPsi[lowSind])/(world.s[highSind] - world.s[lowSind])*deltaS;
-	double K =      world.curvature[lowSind]   + (world.curvature[highSind] - world.curvature[lowSind])/(world.s[highSind] - world.s[lowSind])*deltaS;
+	double SMALL_NUMBER = 0.000000000001; //needed in case of malformed maps
+	double psiDes = world.roadPsi[lowSind] + (world.roadPsi[highSind] - world.roadPsi[lowSind])/(world.s[highSind] - world.s[lowSind]+SMALL_NUMBER)*deltaS;
+	double K =      world.curvature[lowSind]   + (world.curvature[highSind] - world.curvature[lowSind])/(world.s[highSind] - world.s[lowSind]+SMALL_NUMBER)*deltaS;
 
 
 	bool converged;

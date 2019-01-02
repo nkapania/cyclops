@@ -128,6 +128,9 @@ void BasicProfile::genSpeed(std::vector<double>& UxShift, std::vector<double>& A
 	//calculate acceleration profile from physics
 	for (int i = 0; i < UxInit3.size()-1; i++){
 		ax[i] = (pow(UxInit3[i+1], 2) - pow( UxInit3[i], 2)) / (2* ( s[i+1] - s[i]));
+		if (std::isnan(ax[i])){
+			ax[i] = ax[i-1]; //prevent issues where s values are accidentally the same.
+		}
 	}
 
 	ax[numSteps-1] = ax[numSteps - 2]; // assign last value of ax
